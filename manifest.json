@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Simple Calculator",
+  "version": "1.0",
+  "description": "A clean and functional calculator extension with full keyboard support",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Simple Calculator"
+  },
+  "permissions": [],
+  "host_permissions": []
+} 

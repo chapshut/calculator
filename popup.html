@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 300px; 
+      height: 400px;
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f5f5f5;
+    }
+    #display {
+      width: 100%;
+      height: 80px;
+      font-size: 2em;
+      text-align: right;
+      padding: 10px;
+      box-sizing: border-box;
+      background: #fff;
+      border: none;
+      border-bottom: 2px solid #ddd;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      padding: 10px;
+      background: #ddd;
+    }
+    button {
+      height: 60px;
+      font-size: 1.4em;
+      background: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:active { background: #eee; }
+    button[data-value="0"] { grid-column: span 2; }
+    .operator { background: #ff9500; color: white; }
+    .operator:active { background: #e68900; }
+    .clear { background: #ff3b30; color: white; }
+    .clear:active { background: #e0332a; }
+  </style>
+</head>
+<body>
+  <input type="text" id="display" readonly autofocus>
+  <div class="buttons">
+    <button class="clear" data-value="C">C</button>
+    <button class="clear" data-value="CE">CE</button>
+    <button data-value="%">%</button>
+    <button class="operator" data-value="/">÷</button>
+
+    <button data-value="7">7</button>
+    <button data-value="8">8</button>
+    <button data-value="9">9</button>
+    <button class="operator" data-value="*">×</button>
+
+    <button data-value="4">4</button>
+    <button data-value="5">5</button>
+    <button data-value="6">6</button>
+    <button class="operator" data-value="-">−</button>
+
+    <button data-value="1">1</button>
+    <button data-value="2">2</button>
+    <button data-value="3">3</button>
+    <button class="operator" data-value="+">+</button>
+
+    <button data-value="0">0</button>
+    <button data-value=".">.</button>
+    <button class="operator" data-value="=">=</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
