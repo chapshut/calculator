@@ -1,38 +1,66 @@
-const display = document.getElementById('display');
+const resultDisplay = document.getElementById('resultDisplay');
+const liveInput = document.getElementById('liveInput');
 
 let currentInput = '0';
 let operator = null;
 let previousInput = null;
-let shouldResetDisplay = false;
+let shouldResetInput = false;
 
-function updateDisplay() {
-  display.value = currentInput;
+const segments = {
+  '0':[1,1,1,1,1,1,0],'1':[0,1,1,0,0,0,0],'2':[1,1,0,1,1,0,1],
+  '3':[1,1,1,1,0,0,1],'4':[0,1,1,0,0,1,1],'5':[1,0,1,1,0,1,1],
+  '6':[1,0,1,1,1,1,1],'7':[1,1,1,0,0,0,0],'8':[1,1,1,1,1,1,1],
+  '9':[1,1,1,1,0,1,1]
+};
+
+function renderResult(text) {
+  resultDisplay.innerHTML = '';
+  if (!text || text === '0') return;
+
+  let hasDecimal = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    if (char === '.') { hasDecimal = true; continue; }
+
+    const digit = document.createElement('div');
+    digit.className = 'digit';
+
+    const pattern = segments[char] || segments['8'];
+    'abcdefg'.split('').forEach((s, idx) => {
+      const seg = document.createElement('div');
+      seg.className = `segment ${s} ${pattern[idx] ? '' : 'off'}`;
+      digit.appendChild(seg);
+    });
+
+    if (hasDecimal) {
+      const dp = document.createElement('div');
+      dp.className = 'decimal';
+      digit.appendChild(dp);
+      hasDecimal = false;
+    }
+    resultDisplay.appendChild(digit);
+  }
 }
 
 function handleInput(value) {
-  // Numbers and decimal point
   if ('0123456789.'.includes(value)) {
-    if (shouldResetDisplay || currentInput === '0') {
+    if (shouldResetInput || currentInput === '0') {
       currentInput = value === '.' ? '0.' : value;
-      shouldResetDisplay = false;
+      shouldResetInput = false;
     } else {
       if (value === '.' && currentInput.includes('.')) return;
       currentInput += value;
     }
   }
-
-  // Operators
   else if ('+-*/'.includes(value)) {
-    if (previousInput !== null && !shouldResetDisplay) handleInput('=');
+    if (previousInput !== null && operator) handleInput('=');
     operator = value;
-    previousInput = parseFloat(currentInput);
-    shouldResetDisplay = true;
+    previousInput = parseFloat(currentInput || '0');
+    shouldResetInput = true;
   }
-
-  // Equals
   else if (value === '=') {
     if (!operator || previousInput === null) return;
-    const current = parseFloat(currentInput);
+    const current = parseFloat(currentInput || '0');
     let result;
     switch (operator) {
       case '+': result = previousInput + current; break;
@@ -40,74 +68,47 @@ function handleInput(value) {
       case '*': result = previousInput * current; break;
       case '/': result = previousInput / current; break;
     }
-    currentInput = Number.isInteger(result) ? result.toString() : result.toFixed(10).replace(/0+$/, '');
-    operator = null;
-    previousInput = null;
-    shouldResetDisplay = true;
-  }
-
-  // Full clear
-  else if (value === 'C') {
+    renderResult(result.toString());
     currentInput = '0';
     operator = null;
     previousInput = null;
-    shouldResetDisplay = false;
+    shouldResetInput = true;
+    liveInput.value = '0';
+    return;
   }
-
-  // Clear current entry only
-  else if (value === 'CE') {
-    currentInput = '0';
-    shouldResetDisplay = false;
-  }
-
-  // Percent
   else if (value === '%') {
-    currentInput = (parseFloat(currentInput) / 100).toString();
+    currentInput = (parseFloat(currentInput || '0') / 100).toString();
+  }
+  else if (value === 'Backspace') {
+    currentInput = currentInput.length <= 1 ? '0' : currentInput.slice(0, -1);
   }
 
-  updateDisplay();
+  liveInput.value = currentInput;
 }
 
-// Button clicks
-document.querySelectorAll('button').forEach(btn => {
+// Buttons
+document.querySelectorAll('button ').forEach(btn => {
   btn.addEventListener('click', () => {
-    const val = btn.dataset.value;
-    handleInput(val === '−' ? '-' : val);
+    const v = btn.dataset.value;
+    const mapped = v==='−'?'-' : v==='×'?'*' : v==='÷'?'/' : v;
+    handleInput(mapped);
   });
 });
 
-// Keyboard support
+// Keyboard
 document.addEventListener('keydown', e => {
-  // Prevent scrolling
-  if ([' ', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+  const map = { 'Enter':'=', 'Escape':'C', 'Backspace':'Backspace' };
+  if ('0123456789.+-*/%'.includes(e.key) || e.key in map) {
     e.preventDefault();
-  }
-
-  const keyMap = {
-    '0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9',
-    '.':'.', ',':'.', '+':'+', '-':'-', '_':'-', '*':'*', 'x':'*', 'X':'*',
-    '/':'/', '÷':'/', '%':'%', 'Enter':'=', '=':'=', 'Escape':'C', 'c':'C'
-  };
-
-  if (e.key in keyMap) {
-    e.preventDefault();
-    handleInput(keyMap[e.key]);
-    return;
-  }
-
-  // Backspace AND Delete both delete only the last digit
-  if (e.key === 'Backspace' || e.key === 'Delete') {
-    e.preventDefault();
-    if (currentInput.length > 1) {
-      currentInput = currentInput.slice(0, -1);
+    if (e.key === 'Escape') {
+      currentInput = '0'; operator = null; previousInput = null;
+      renderResult(''); liveInput.value = '0';
     } else {
-      currentInput = '0';
+      handleInput(map[e.key] || e.key);
     }
-    shouldResetDisplay = false;
-    updateDisplay();
   }
 });
 
-// Start
-updateDisplay();
-display.focus();
+// Init
+liveInput.value = '0';
+renderResult('');
