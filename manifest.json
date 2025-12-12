@@ -1,11 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Neon Calculator",
-  "version": "1.0",
-  "description": "Een futuristische neon calculator met toetsenbordondersteuning",
+  "name": "Neon 7-Segment Calculator",
+  "version": "2.0",
+  "description": "Prachtige retro neon calculator met live input en schalend 7-segment resultaat",
   "action": {
     "default_popup": "popup.html",
     "default_title": "Neon Calculator"
+  },
+  "icons": {
+    "128": "icon.png"
   },
   "permissions": [],
   "host_permissions": []
