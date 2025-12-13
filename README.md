@@ -1,6 +1,6 @@
 # Neon Calculator Chrome Extension
 
-![Neon Calculator Screenshot](screenshot.png)
+![Neon Calculator Screenshot](screenshot2.png)
 
 Een prachtige, minimalistische **dark neon calculator** als Chrome/Edge extensie – met een echte cyberpunk/retro vibe.
 
